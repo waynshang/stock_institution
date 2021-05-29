@@ -2,7 +2,7 @@
 import csv
 import os
 import glob
-import mysql.connector
+# import mysql.connector
 from datetime import datetime
 import json 
 import mysql_connect
@@ -22,10 +22,10 @@ def import_data(file_name = None):
     for file_name in result:
       print("----------------{}---------------".format(file_name))
       with open(file_name, newline='') as csvfile:
-        # 讀取 CSV 檔案內容
+        # read CSV content
         rows = csv.reader(csvfile)
         next(rows) # next first row
-        # 以迴圈輸出每一列
+        # for loop
         find = "SELECT * from gain_loss_log where file_name = %s"
         cursor.execute(find, (file_name, ))
         find_result = cursor.fetchall()

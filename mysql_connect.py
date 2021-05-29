@@ -20,7 +20,7 @@ def connect(way, database, server_name):
     elif way == 'sqlalchemy':
       url = "mysql://{}:{}@{}/{}".format(username,password,host,database)
       print(url)
-      engine = sqlalchemy.create_engine(url, echo=True)
+      engine = sqlalchemy.create_engine(url, echo=False)
       return engine
   except mysql.connector.Error as error:
     print(" {}".format(error))
