@@ -47,6 +47,7 @@ def insert_or_update_db(institution_date, position_date, symbol):
 
 if __name__ == '__main__':
     try:
-        main({"stock": "FB"})
+        for symbol in ["AAPL", "AMZN", "AMD", "AA", "DIS", "F","FB", "GOOG", "GS", "MSFT", "NFLX", "NVDA", "SQ", "TDOC", "TSLA", "TSM", "U", "X"]:
+            main({"stock": symbol})
     except KeyboardInterrupt:
         exit()

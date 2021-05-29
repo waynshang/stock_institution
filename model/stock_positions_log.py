@@ -3,8 +3,6 @@ from sqlalchemy.orm import declarative_base
 import re
 from itertools import repeat
 from datetime import date, datetime
-from model.stock_positions_log import StockPositionsLog, EXCLUDE_COLUMNS as LOG_EXCLUDE_COLUMNS
-from utils import model2dict
 
 Base = declarative_base()
 MappingTable = {
@@ -15,9 +13,9 @@ MappingTable = {
   "New Positions": "new_positions",
   "Sold Out Positions": "sold_out_positions"
 }
-EXCLUDE_COLUMNS = ['symbol', 'date', 'updated_at']
-class StockPosition(Base):
-  __tablename__ = 'stock_positions'
+EXCLUDE_COLUMNS = ['updated_at']
+class StockPositionsLog(Base):
+  __tablename__ = 'stock_positions_log'
   symbol = Column(String, primary_key=True)
   increased_positions_holders = Column(BigInteger)
   increased_positions_shares = Column(BigInteger)
@@ -67,9 +65,6 @@ class StockPosition(Base):
             if len(filter_result) >0: 
               position_data["updated_at"] = datetime.now()
               position_results.update(position_data)
-              log_data = model2dict(StockPosition, position_result, LOG_EXCLUDE_COLUMNS)
-              session.add(StockPositionsLog(**log_data))
-
         else:
             session.add(StockPosition(**position_data))
             # session.add(StockPosition(**position_data))

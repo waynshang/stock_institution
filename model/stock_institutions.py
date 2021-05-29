@@ -2,14 +2,15 @@ from sqlalchemy import Column, Integer, String, Numeric, BigInteger, Date, DateT
 from sqlalchemy.orm import declarative_base
 import re
 from datetime import date, datetime
-
+from model.stock_institutions_log import StockInstitutionsLog, EXCLUDE_COLUMNS as LOG_EXCLUDE_COLUMNS
+from utils import model2dict
 Base = declarative_base()
 MappingTable = {
   "Institutional Ownership": "institutional_ownership",
   "Total Shares Outstanding (millions)":"total_share_out_standing",
   "Total Value of Holdings (millions)":"total_value_of_holdings"
 }
-EXPECTED_COLUMNS = ['symbol', 'date', 'updated_at']
+EXCLUDE_COLUMNS = ['symbol', 'date', 'updated_at']
 class StockInstitution(Base):
   __tablename__ = 'stock_institutions'
   symbol = Column(String, primary_key=True)
@@ -42,12 +43,15 @@ class StockInstitution(Base):
         # session.execute(StockInstitution.insert(), [institution_date])
         if institution_results.first():
             institution_result = institution_results.first()
-            compared_columns = list(set(institution_date.keys())-set(EXPECTED_COLUMNS))
+            compared_columns = list(set(institution_date.keys())-set(EXCLUDE_COLUMNS))
             filter_result = list(filter(lambda i: float(vars(institution_result)[i]) != float(institution_date[i]), compared_columns))
-            print(filter_result)
+            print("=====update ? {}======".format(len(filter_result) >0))
             if len(filter_result) >0: 
               institution_date["updated_at"] = datetime.now()
-              institution_results.update(institution_date)
+              # institution_results.update(institution_date)
+              log_data = model2dict(StockInstitution, institution_result, LOG_EXCLUDE_COLUMNS)
+              # print(log_data)
+              session.add(StockInstitutionsLog(**log_data))
         else:
             session.add(StockInstitution(**institution_date))
             # session.add(StockInstitution(**institution_date))
