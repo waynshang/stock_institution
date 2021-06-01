@@ -41,13 +41,18 @@ def insert_or_update_db(institution_date, position_date, symbol):
     # create session and add objects
     with Session(engine) as session:
         # result = session.execute(select(StockInstitution))
+        print("======StockInstitution====")
         session = StockInstitution.insert_or_update(session, institution_date, symbol)
+        print("======StockPosition====")
         session = StockPosition.insert_or_update(session, position_date, symbol)
         session.commit()
 
 if __name__ == '__main__':
     try:
-        for symbol in ["AAPL", "AMZN", "AMD", "AA", "DIS", "F","FB", "GOOG", "GS", "MSFT", "NFLX", "NVDA", "SQ", "TDOC", "TSLA", "TSM", "U", "X"]:
+        # lt = ["AAPL", "AMZN", "AMD", "AA", "DIS", "F","FB", "GOOG", "GS", "MSFT", "NFLX", "NVDA", "SQ", "TDOC", "TSLA", "TSM", "U", "X"]
+        lt = ["AAPL", "FB"]
+        for symbol in lt:
+            print("==========symbol: {}".format(symbol))
             main({"stock": symbol})
     except KeyboardInterrupt:
         exit()

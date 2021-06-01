@@ -62,7 +62,13 @@ class StockPosition(Base):
         if position_results.first():
             position_result = position_results.first()
             compared_columns = list(set(position_data.keys())-set(EXCLUDE_COLUMNS))
-            filter_result = list(filter(lambda i: float(vars(position_result)[i]) != float(position_data[i]), compared_columns))
+            # filter_result = list(filter(lambda i: float(vars(position_result)[i]) != float(position_data[i]), compared_columns))
+            filter_result = []
+            for column in compared_columns:
+              print(column)
+              print(float(vars(position_result)[column]))
+              print(float(position_data[column]))
+              if float(vars(position_result)[column]) != float(position_data[column]): filter_result.append(column)
             print(filter_result)
             if len(filter_result) >0: 
               position_data["updated_at"] = datetime.now()
@@ -71,6 +77,7 @@ class StockPosition(Base):
               session.add(StockPositionsLog(**log_data))
 
         else:
+            position_data["updated_at"] = datetime.now()
             session.add(StockPosition(**position_data))
             # session.add(StockPosition(**position_data))
     return session

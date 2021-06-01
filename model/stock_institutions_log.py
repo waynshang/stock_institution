@@ -36,8 +36,8 @@ class StockInstitutionsLog(Base):
               institution_date["updated_at"] = datetime.now()
               institution_results.update(institution_date)
         else:
+            institution_date["updated_at"] = datetime.now()
             session.add(StockInstitution(**institution_date))
-            # session.add(StockInstitution(**institution_date))
     return session
     
 
