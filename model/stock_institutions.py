@@ -3,7 +3,7 @@ from sqlalchemy.orm import declarative_base
 import re
 from datetime import date, datetime
 from model.stock_institutions_log import StockInstitutionsLog, EXCLUDE_COLUMNS as LOG_EXCLUDE_COLUMNS
-from utils import model2dict
+from utils import model2dict, insert_or_update as utils_insert_or_update
 Base = declarative_base()
 MappingTable = {
   "Institutional Ownership": "institutional_ownership",
@@ -36,34 +36,10 @@ class StockInstitution(Base):
   
   def insert_or_update(session, institution_date, symbol):
     institution_results = session.query(StockInstitution).filter(StockInstitution.symbol == symbol)#.first()
-    if institution_date:
-        institution_date["symbol"] = symbol
-        institution_date["date"] = date.today()
-        # session.add(StockInstitution(**institution_date))
-        # session.execute(StockInstitution.insert(), [institution_date])
-        filter_result = []
-        if institution_results.first():
-            institution_result = institution_results.first()
-            compared_columns = list(set(institution_date.keys())-set(EXCLUDE_COLUMNS))
-            for column in compared_columns:
-              print(column)
-              print(float(vars(institution_result)[column]))
-              print(float(institution_date[column]))
-              if float(vars(institution_result)[column]) != float(institution_date[column]): filter_result.append(column)
-            # filter_result = list(filter(lambda i: float(vars(institution_result)[i]) != float(institution_date[i]), compared_columns))
-            print("=====update {}======".format(len(filter_result) >0))
-            print("filter_result: {}".format(filter_result))
-            if len(filter_result) >0: 
-              institution_date["updated_at"] = datetime.now()
-              institution_results.update(institution_date)
-              log_data = model2dict(StockInstitution, institution_result, LOG_EXCLUDE_COLUMNS)
-              # print(log_data)
-              session.add(StockInstitutionsLog(**log_data))
-        else:
-            institution_date["updated_at"] = datetime.now()
-            session.add(StockInstitution(**institution_date))
-            # session.add(StockInstitution(**institution_date))
+    session = utils_insert_or_update(session, institution_date, symbol, StockInstitution, 
+    StockInstitutionsLog, institution_results, EXCLUDE_COLUMNS, LOG_EXCLUDE_COLUMNS)
     return session
+  
 
 
     
