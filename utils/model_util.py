@@ -14,17 +14,17 @@ def insert_or_update(session, data, symbol, model, log_model, query_results, exc
     if data:
       data["symbol"] = symbol
       data["date"] = date.today()
-      log_data = {"symbol": symbol, "updated_at": datetime.now()}
+      # log_data = {"symbol": symbol, "updated_at": datetime.now()}
       if query_results.first():
           query_result = query_results.first()
-          log_data["date"] = vars(query_result)["date"]
+          log_data = model2dict(model, query_result, log_exclude_columns)
+          print(log_data)
           print("======last update date: {} ======".format(vars(query_result)["date"]))
           if vars(query_result)["date"] != date.today():
             compared_columns = list(set(data.keys())-set(exclude_columns))
             for column in compared_columns:
               log_data[column] = float(data[column]) - float(vars(query_result)[column])
             data["updated_at"] = datetime.now()
-            log_data = model2dict(model, query_result, log_exclude_columns)
             # print(log_data)
             session.add(log_model(**log_data))
             query_results.update(data)
