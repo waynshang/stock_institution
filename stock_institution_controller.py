@@ -1,5 +1,5 @@
 import urllib3
-import mysql_connect
+from db.sql_alchemy import SqlAlchemyConnector
 from request import get_nasdaq_institution
 from sqlalchemy.orm import Session
 from model.stock_institutions import StockInstitution
@@ -37,7 +37,8 @@ def parse_response(response):
 
 
 def insert_or_update_db(institution_date, position_date, symbol):
-    engine = mysql_connect.connect('sqlalchemy','stock', 'aws')
+    connector = SqlAlchemyConnector('stock', 'local')
+    engine = connector.connect()
     # create session and add objects
     with Session(engine) as session:
         # result = session.execute(select(StockInstitution))
@@ -49,7 +50,7 @@ def insert_or_update_db(institution_date, position_date, symbol):
 
 if __name__ == '__main__':
     try:
-        lt = ["AAPL", "AMZN", "AMD", "AA", "DIS", "F", "FB", "GOOG", "GS", "MSFT", "NFLX", "NVDA", "NUE","SQ", "SHOP", "TDOC", "TSLA", "TSM", "U", "X"]
+        lt = ["AAPL", "AMZN", "AMD", "AA", "DIS", "F", "FB", "GOOG", "GS", "MSFT", "NFLX", "NVDA", "NUE","SQ", "SHOP", "TDOC", "TSLA", "TSM", "U", "UPST", "X"]
         # lt = ["AAPL", "FB"]
         # lt = ["NUE"]
         for symbol in lt:

@@ -5,7 +5,9 @@ import glob
 # import mysql.connector
 from datetime import datetime
 import json 
-import mysql_connect
+from db.mysql_connector import MysqlConnector
+import mysql.connector
+
 
 
 
@@ -17,7 +19,8 @@ def import_data(file_name = None):
     # os.chdir(path)
     result = glob.glob('*.{}'.format(extension))
     print(result)
-    db = mysql_connect.connect('mysql','stock', 'local')
+    connector = MysqlConnector('stock', 'local')
+    db = connector.connect()
     cursor=db.cursor()
     for file_name in result:
       print("----------------{}---------------".format(file_name))
