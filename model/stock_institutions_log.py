@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Numeric, BigInteger, Date, DateT
 from sqlalchemy.orm import declarative_base
 import re
 from datetime import date, datetime
-
+from model.stock_institutions import StockInstitution
 Base = declarative_base()
 MappingTable = {
   "Institutional Ownership": "institutional_ownership",

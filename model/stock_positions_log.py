@@ -3,6 +3,7 @@ from sqlalchemy.orm import declarative_base
 import re
 from itertools import repeat
 from datetime import date, datetime
+from model.stock_positions import StockPosition
 
 Base = declarative_base()
 MappingTable = {

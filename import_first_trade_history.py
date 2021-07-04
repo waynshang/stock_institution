@@ -1,63 +1,40 @@
 
-import csv
-import os
-import glob
-# import mysql.connector
+
 from datetime import datetime
-import json 
 from db.mysql_connector import MysqlConnector
-import mysql.connector
-from utils import get_certain_format_files_from_path
-
-
-
-
+from utils import get_certain_format_files_from_path, move_file
+from model.gain_loss_log import GainLossLog
+import csv
+import json
           
 def import_data(file_name = None):
-  try:
-
     csv_files = get_certain_format_files_from_path()
     connector = MysqlConnector('stock', 'local')
     print(connector)
     db = connector.connect()
-    cursor=db.cursor()
+    cursor = db.cursor()
     for file_name in csv_files:
+      file_name = file_name.split("/", 1).pop()
       print("----------------{}---------------".format(file_name))
+      is_file_exist = check_file_exist(cursor, file_name)
+      if is_file_exist: pass
       with open(file_name, newline='') as csvfile:
         # read CSV content
         rows = csv.reader(csvfile)
         next(rows) # next first row
-        # for loop
-        find = "SELECT * from gain_loss_log where file_name = %s"
-        cursor.execute(find, (file_name, ))
-        find_result = cursor.fetchall()
-        # print(cursor.fetchall())
-        if not find_result:
-          for row in rows:
-            new_row = list(map(mapfunction, enumerate(row)))
-            new_row.append(file_name)
-            print("---new_row----")
-            print(new_row)
-            insert_data = [tuple(new_row)]
-          
-            # row.append(file_name)
-            
-            print("ready to insert")
-            try: 
-              if row[0]:
-                sqlStuff = "INSERT INTO gain_loss_log (`symbol`, `desciption`, `quantity`, `days_held`, `date_required`, `date_sold`, `sales_amount`, `cost`, `gain_loss`, `file_name`) VALUES (%s, %s, %s, %s, %s, %s , %s, %s, %s, %s)"
-                cursor.executemany(sqlStuff, insert_data) #[(row[0],row[1],row[2],row[3],row[4],row[5],row[6].replace('$', ''),row[7].replace('$', '').replace(',', ''),row[8].replace('$', '').replace(',', ''),row[9])])
-                db.commit()
-                print(cursor.rowcount, "Record inserted successfully into stock table")
-            except mysql.connector.Error as error:
-              print("Failed to insert into MySQL table {}".format(error))
-              handle_error(error, cursor, db, row, file_name)
-        else:
-          pass
-          # print("File already input {}".format(find_result))
-  except mysql.connector.Error as error:
-    print("{}".format(error))
+        insert_data = format_gain_loss_log_data(rows, file_name)
+        for row in insert_data:
+          GainLossLog.insert_to_db(cursor, db, row, file_name)
+        is_file_exist = check_file_exist(cursor, file_name)
+        if is_file_exist: move_file(file_name, 'archive')
+ 
+      
 
+def check_file_exist(cursor, file_name):
+  find = "SELECT * from gain_loss_log where file_name = %s"
+  cursor.execute(find, (file_name, ))
+  find_result = cursor.fetchall()
+  return True if find_result else False
 
 def mapfunction(data):
   i = list(data)[0]
@@ -69,18 +46,17 @@ def mapfunction(data):
   else:
     return el
 
-
-def handle_error(error, cursor, db, data , file_name):
-  try:
-    sqlStuff = "INSERT INTO error_log (`error`, `data`, `file_name`) VALUES (%s, %s, %s)"
-    cursor.executemany(sqlStuff, [(str(error), str(json.dumps(data)), file_name)])
-    db.commit()
-  except mysql.connector.Error as error:
-    print("handle_error failed {}".format(error))
-    # handle_error(error, cursor, db,row,file_name)
+def format_gain_loss_log_data(rows, file_name):
+  gain_loss_logs = []
+  for row in rows:
+    if row[0]:
+      new_row = list(map(mapfunction, enumerate(row)))
+      new_row.append(file_name)
+    gain_loss_logs.append(tuple(new_row))
+  return gain_loss_logs
 
 if __name__ == '__main__':
     try:
-        import_data()
+      import_data()
     except KeyboardInterrupt:
         exit()
