@@ -1,9 +1,10 @@
-from db.mysql_connect import MysqlConnect;
+from db.db_connector import MysqlConnection;
 import mysql.connector
 
-class MysqlConnector(MysqlConnect):  
+class MysqlConnector(MysqlConnection):  
+
   def __init__(self, database, server_name):
-    super(MysqlConnect, self).__init__(database, server_name)
+    super().__init__(database, server_name)
 
   def connect(self):
     try:

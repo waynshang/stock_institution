@@ -7,6 +7,7 @@ from datetime import datetime
 import json 
 from db.mysql_connector import MysqlConnector
 import mysql.connector
+from utils import get_certain_format_files_from_path
 
 
 
@@ -14,15 +15,13 @@ import mysql.connector
           
 def import_data(file_name = None):
   try:
-    path = "/"
-    extension = 'csv'
-    # os.chdir(path)
-    result = glob.glob('*.{}'.format(extension))
-    print(result)
+
+    csv_files = get_certain_format_files_from_path()
     connector = MysqlConnector('stock', 'local')
+    print(connector)
     db = connector.connect()
     cursor=db.cursor()
-    for file_name in result:
+    for file_name in csv_files:
       print("----------------{}---------------".format(file_name))
       with open(file_name, newline='') as csvfile:
         # read CSV content
@@ -58,6 +57,7 @@ def import_data(file_name = None):
           # print("File already input {}".format(find_result))
   except mysql.connector.Error as error:
     print("{}".format(error))
+
 
 def mapfunction(data):
   i = list(data)[0]

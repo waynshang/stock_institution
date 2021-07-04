@@ -1,11 +1,11 @@
-from db.mysql_connect import MysqlConnect;
+from db.mysql_connect import MysqlConnection;
 import sqlalchemy
 from sqlalchemy.exc import SQLAlchemyError
 
-class SqlAlchemyConnector(MysqlConnect):
+class SqlAlchemyConnector(MysqlConnection):
 
   def __init__(self, database, server_name):
-    super(MysqlConnect, self).__init__(database, server_name)
+    super().__init__(database, server_name)
 
   def connect(self):
     try:
