@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Numeric, BigInteger, Date, DateT
 from sqlalchemy.orm import declarative_base
 import re
 from datetime import date, datetime
-from model.stock_institutions import StockInstitution
+from . import stock_institutions
 Base = declarative_base()
 MappingTable = {
   "Institutional Ownership": "institutional_ownership",
@@ -21,6 +21,7 @@ class StockInstitutionsLog(Base):
   # updated_at = Column(DateTime)
 
   def insert_or_update(session, institution_date, symbol):
+    StockInstitution = stock_institutions.StockInstitution
     institution_results = session.query(StockInstitution).filter(StockInstitution.symbol == symbol)#.first()
     if institution_date:
         institution_date["symbol"] = symbol
@@ -39,6 +40,15 @@ class StockInstitutionsLog(Base):
             institution_date["updated_at"] = datetime.now()
             session.add(StockInstitution(**institution_date))
     return session
+  
+  def prepare_and_data_from_api(session, data_from_api, old_data):
+    exclude_columns = stock_institutions.EXCLUDE_COLUMNS
+    compared_columns = list(set(data_from_api.keys())-set(exclude_columns))
+    for column in compared_columns:
+      old_data[column] = float(data_from_api[column]) - float(old_data[column])
+    session.add(StockInstitutionsLog(**old_data))
+    return session
+
     
 
   def __repr__(self):

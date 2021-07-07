@@ -1,9 +1,8 @@
 from sqlalchemy import Column, Integer, String, Numeric, BigInteger, Date, DateTime
 from sqlalchemy.orm import declarative_base
 import re
-from itertools import repeat
 from datetime import date, datetime
-from model.stock_positions import StockPosition
+from . import stock_positions
 
 Base = declarative_base()
 MappingTable = {
@@ -33,11 +32,13 @@ class StockPositionsLog(Base):
   date = Column(Date)
   # created_at = Column(DateTime)
   updated_at = Column(DateTime)
-  
+
 
 
   def handle_position_data(data, type):
     result = {}
+    StockPosition = stock_positions.StockPosition
+
     for d in data or []:
       result = StockPosition.mapping_response_data_to_sql_column(d, type, result)
     return result
@@ -52,6 +53,8 @@ class StockPositionsLog(Base):
     return result
 
   def insert_or_update(session, position_data, symbol):
+    StockPosition = stock_positions.StockPosition
+
     position_results = session.query(StockPosition).filter(StockPosition.symbol == symbol)#.first()
     if position_data:
         position_data["symbol"] = symbol
@@ -69,4 +72,12 @@ class StockPositionsLog(Base):
         else:
             session.add(StockPosition(**position_data))
             # session.add(StockPosition(**position_data))
+    return session
+
+  def prepare_and_data_from_api(session, data_from_api, old_data):
+    exclude_columns = stock_positions.EXCLUDE_COLUMNS
+    compared_columns = list(set(data_from_api.keys())-set(exclude_columns))
+    for column in compared_columns:
+      old_data[column] = float(data_from_api[column]) - float(old_data[column])
+    session.add(StockPositionsLog(**old_data))
     return session

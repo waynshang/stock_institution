@@ -3,32 +3,35 @@ from datetime import date, datetime
 def row2list(model, rows, exclude_columns):
     d = []
     for row in rows:
-      d.append(model2dict(model, data, exclude_columns))
+      d.append(model2dict(model, row, exclude_columns))
     return d
 
 def model2dict(model, data, exclude_columns):
     columns = list(set(model.__table__.columns.keys())-set(exclude_columns))
     return {c: getattr(data, c) for c in columns}
 
-def insert_or_update(session, data, symbol, model, log_model, query_results, exclude_columns, log_exclude_columns):
-    if data:
-      data["symbol"] = symbol
-      data["date"] = date.today()
-      # log_data = {"symbol": symbol, "updated_at": datetime.now()}
-      if query_results.first():
-          query_result = query_results.first()
-          log_data = model2dict(model, query_result, log_exclude_columns)
-          print(log_data)
-          print("======last update date: {} ======".format(vars(query_result)["date"]))
-          if vars(query_result)["date"] != date.today():
-            compared_columns = list(set(data.keys())-set(exclude_columns))
-            for column in compared_columns:
-              log_data[column] = float(data[column]) - float(vars(query_result)[column])
-            data["updated_at"] = datetime.now()
-            # print(log_data)
-            session.add(log_model(**log_data))
-            query_results.update(data)
-      else:
-          data["updated_at"] = datetime.now()
-          session.add(model(**data))
-      return session
+def update_table_and_insert_log(session, data_from_api, symbol, model, log_model):
+  if not data_from_api: return session
+  log_exclude_columns = log_model.EXCLUDE_COLUMNS
+
+  data_filter_by_symbol = model.get_data_by_column(session, symbol, 'symbol')
+
+  data_from_api["symbol"] = symbol
+  data_from_api["date"] = date.today()
+
+  # log_data = {"symbol": symbol, "updated_at": datetime.now()}
+  if data_filter_by_symbol:
+    #need to add to log table
+    old_data = model2dict(model, data_filter_by_symbol, log_exclude_columns)
+    print(old_data)
+    print("======last update date: {} ======".format(vars(data_filter_by_symbol)["date"]))
+    if vars(data_filter_by_symbol)["date"] != date.today():
+      session = log_model.prepare_and_data_from_api(session, data_from_api, old_data)
+      data_from_api["updated_at"] = datetime.now()
+      data_filter_by_symbol.update(data_from_api)
+  else:
+      data_from_api["updated_at"] = datetime.now()
+      session.add(model(**data_from_api))
+  return session
+
+

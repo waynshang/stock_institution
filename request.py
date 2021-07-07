@@ -1,7 +1,7 @@
 import requests
 HEADER = {'user-agent': 'PostmanRuntime/7.26.10', 'Connection': 'keep-alive'}
 
-def get_nasdaq_institution(stock):
+def get_nasdaq_institution_from_api(stock):
   # my_headers = {'user-agent': 'PostmanRuntime/7.26.10', 'Connection': 'keep-alive'}
   url = "https://api.nasdaq.com/api/company/" + stock + "/institutional-holdings?limit=0&sortColumn=marketValue&sortOrder=DESC"
   result = call_api(url)
