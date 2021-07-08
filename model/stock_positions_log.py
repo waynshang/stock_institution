@@ -13,7 +13,6 @@ MappingTable = {
   "New Positions": "new_positions",
   "Sold Out Positions": "sold_out_positions"
 }
-EXCLUDE_COLUMNS = ['updated_at']
 class StockPositionsLog(Base):
   __tablename__ = 'stock_positions_log'
   symbol = Column(String, primary_key=True)
@@ -32,6 +31,8 @@ class StockPositionsLog(Base):
   date = Column(Date)
   # created_at = Column(DateTime)
   updated_at = Column(DateTime)
+  EXCLUDE_COLUMNS = ['updated_at']
+
 
 
 
@@ -63,7 +64,7 @@ class StockPositionsLog(Base):
         # session.execute(StockPosition.insert(), [position_data])
         if position_results.first():
             position_result = position_results.first()
-            compared_columns = list(set(position_data.keys())-set(EXCLUDE_COLUMNS))
+            compared_columns = list(set(position_data.keys())-set(stock_positions.EXCLUDE_COLUMNS))
             filter_result = list(filter(lambda i: float(vars(position_result)[i]) != float(position_data[i]), compared_columns))
             print(filter_result)
             if len(filter_result) >0: 

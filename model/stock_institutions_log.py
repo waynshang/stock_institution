@@ -9,7 +9,6 @@ MappingTable = {
   "Total Shares Outstanding (millions)":"total_share_out_standing",
   "Total Value of Holdings (millions)":"total_value_of_holdings"
 }
-EXCLUDE_COLUMNS = ['updated_at']
 class StockInstitutionsLog(Base):
   __tablename__ = 'stock_institutions_log'
   symbol = Column(String, primary_key=True)
@@ -17,6 +16,8 @@ class StockInstitutionsLog(Base):
   total_share_out_standing = Column(BigInteger)
   total_value_of_holdings = Column(BigInteger)
   date = Column(Date)
+  EXCLUDE_COLUMNS = ['updated_at']
+
   # created_at = Column(DateTime)
   # updated_at = Column(DateTime)
 
@@ -30,7 +31,7 @@ class StockInstitutionsLog(Base):
         # session.execute(StockInstitution.insert(), [institution_date])
         if institution_results.first():
             institution_result = institution_results.first()
-            compared_columns = list(set(institution_date.keys())-set(EXCLUDE_COLUMNS))
+            compared_columns = list(set(institution_date.keys())-set(stock_institutions.EXCLUDE_COLUMNS))
             filter_result = list(filter(lambda i: float(vars(institution_result)[i]) != float(institution_date[i]), compared_columns))
             print(filter_result)
             if len(filter_result) >0: 

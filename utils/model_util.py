@@ -27,8 +27,8 @@ def update_table_and_insert_log(session, data_from_api, symbol, model, log_model
     print("======last update date: {} ======".format(vars(data_filter_by_symbol)["date"]))
     if vars(data_filter_by_symbol)["date"] != date.today():
       session = log_model.prepare_and_data_from_api(session, data_from_api, old_data)
-      data_from_api["updated_at"] = datetime.now()
-      data_filter_by_symbol.update(data_from_api)
+      # data_from_api["updated_at"] = datetime.now()      
+      data_filter_by_symbol.updated_at = datetime.now() 
   else:
       data_from_api["updated_at"] = datetime.now()
       session.add(model(**data_from_api))

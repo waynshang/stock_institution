@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Numeric, BigInteger, Date, DateT
 from sqlalchemy.orm import declarative_base
 import re
 
-from model.stock_positions_log import StockPositionsLog, EXCLUDE_COLUMNS as LOG_EXCLUDE_COLUMNS
+from model.stock_positions_log import StockPositionsLog
 from utils import update_table_and_insert_log
 
 Base = declarative_base()
@@ -15,6 +15,7 @@ MappingTable = {
   "Sold Out Positions": "sold_out_positions"
 }
 EXCLUDE_COLUMNS = ['symbol', 'date', 'updated_at']
+LOG_EXCLUDE_COLUMNS = StockPositionsLog.EXCLUDE_COLUMNS
 POSITION_UNITS = ["shares", "holders"]
 
 class StockPosition(Base):
@@ -61,5 +62,5 @@ class StockPosition(Base):
     return session
     
   def get_data_by_column(session, value, column):
-    return session.query(StockPosition).filter(StockPosition[column] == value).first()
+    return session.query(StockPosition).filter(getattr(StockPosition, column) == value).first()
 

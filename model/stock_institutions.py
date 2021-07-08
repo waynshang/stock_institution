@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Numeric, BigInteger, Date, DateT
 from sqlalchemy.orm import declarative_base
 import re
 from datetime import date, datetime
-from model.stock_institutions_log import StockInstitutionsLog, EXCLUDE_COLUMNS as LOG_EXCLUDE_COLUMNS
+from model.stock_institutions_log import StockInstitutionsLog
 from utils import update_table_and_insert_log
 Base = declarative_base()
 MappingTable = {
@@ -11,6 +11,7 @@ MappingTable = {
   "Total Value of Holdings (millions)":"total_value_of_holdings"
 }
 EXCLUDE_COLUMNS = ['symbol', 'date', 'updated_at']
+LOG_EXCLUDE_COLUMNS = StockInstitutionsLog.EXCLUDE_COLUMNS
 class StockInstitution(Base):
   __tablename__ = 'stock_institutions'
   symbol = Column(String, primary_key=True)
@@ -41,7 +42,7 @@ class StockInstitution(Base):
     return session
 
   def get_data_by_column(session, value, column):
-    return session.query(StockInstitution).filter(StockInstitution[column] == value).first()
+    return session.query(StockInstitution).filter(getattr(StockInstitution, column) == value).first()
  
 
   def __repr__(self):

@@ -51,7 +51,7 @@ def insert_or_update_db(institution_date, position_date, symbol):
 if __name__ == '__main__':
     try:
         lt = ["AAPL", "AMZN", "AMD", "AA", "DIS", "F", "FB", "GOOG", "GS", "MSFT", "NFLX", "NVDA", "NUE","SQ", "SLB","SHOP", "TDOC", "TSLA", "TSM", "U", "UPST", "X"]
-        lt = ["AAPL", "FB"]
+        # lt = ["AAPL", "FB"]
         # lt = ["NUE"]
         for symbol in lt:
             print("==========symbol: {}".format(symbol))
