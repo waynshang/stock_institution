@@ -17,5 +17,5 @@ class MysqlConnector(MysqlConnection):
       )
       return db
     except mysql.connector.Error as error:
-      print(" {}".format(error))
+      DEBUG.info(" {}".format(error))
     return None

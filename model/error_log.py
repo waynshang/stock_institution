@@ -8,5 +8,5 @@ class ErrorLog:
       cursor.executemany(sqlStuff, [(str(error), str(data), file_name)])
       db.commit()
     except mysql.connector.Error as error:
-      print("handle_error failed {}".format(error))
+      DEBUG.info("handle_error failed {}".format(error))
       # handle_error(error, cursor, db,row,file_name)

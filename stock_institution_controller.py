@@ -6,15 +6,15 @@ from model.stock_institutions import StockInstitution
 from model.stock_positions import StockPosition
 from datetime import date
 from sqlalchemy import select
-
+from utils import getLogger
+DEBUG = getLogger()
 
 def main(params):
     response = get_api_response(params["stock"])
-    print(response)
+    DEBUG.info(response)
     if response : 
         institution_date, position_date = fetch_institution_and_position_data_from_api_response(response) 
         if institution_date or position_date : insert_or_update_db(institution_date, position_date, params["stock"])
-    
 
 def get_api_response(stock):
     # TODO implement
@@ -23,7 +23,7 @@ def get_api_response(stock):
     return None
 
 def fetch_institution_and_position_data_from_api_response(response):
-    print("fetch_institution_and_position_data_from_api_response")
+    DEBUG.info("fetch_institution_and_position_data_from_api_response")
     # {'institutional_ownership': 57.56, 'total_share_out_standing': 16688.0, 'total_value_of_holdings': 1364155.0}
     # {'increased_positions_shares': 162714490, 'decreased_positions_shares': 376214279, 
     # 'held_positions_shares': 9066444362, 'total_institutional_shares': 9605373131, 
@@ -42,9 +42,9 @@ def insert_or_update_db(institution_date, position_date, symbol):
     # create session and add objects
     with Session(engine) as session:
         # result = session.execute(select(StockInstitution))
-        print("======StockInstitution====")
+        DEBUG.info("======StockInstitution====")
         session = StockInstitution.insert_or_update(session, institution_date, symbol)
-        print("======StockPosition====")
+        DEBUG.info("======StockPosition====")
         session = StockPosition.insert_or_update(session, position_date, symbol)
         session.commit()
 
@@ -54,7 +54,7 @@ if __name__ == '__main__':
         # lt = ["AAPL", "FB"]
         # lt = ["NUE"]
         for symbol in lt:
-            print("==========symbol: {}".format(symbol))
+            DEBUG.info("==========symbol: {}========".format(symbol))
             main({"stock": symbol})
     except KeyboardInterrupt:
         exit()

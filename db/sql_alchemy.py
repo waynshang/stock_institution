@@ -13,5 +13,5 @@ class SqlAlchemyConnector(MysqlConnection):
       engine = sqlalchemy.create_engine(url, echo=False)
       return engine
     except SQLAlchemyError as error:
-      print(" {}".format(error))
+      DEBUG.info(" {}".format(error))
     return None

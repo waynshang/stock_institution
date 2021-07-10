@@ -2,20 +2,21 @@
 
 from datetime import datetime
 from db.mysql_connector import MysqlConnector
-from utils import get_certain_format_files_from_path, move_file
 from model.gain_loss_log import GainLossLog
 import csv
 import json
-          
+from utils import getLogger, get_certain_format_files_from_path, move_file
+DEBUG = getLogger()
+
 def import_data(file_name = None):
     csv_files = get_certain_format_files_from_path()
     connector = MysqlConnector('stock', 'local')
-    print(connector)
+    DEBUG.info(connector)
     db = connector.connect()
     cursor = db.cursor()
     for file_name in csv_files:
       file_name = file_name.split("/", 1).pop()
-      print("----------------{}---------------".format(file_name))
+      DEBUG.info("----------------{}---------------".format(file_name))
       is_file_exist = check_file_exist(cursor, file_name)
       if is_file_exist: pass
       with open(file_name, newline='') as csvfile:
@@ -54,6 +55,8 @@ def format_gain_loss_log_data(rows, file_name):
       new_row.append(file_name)
     gain_loss_logs.append(tuple(new_row))
   return gain_loss_logs
+
+
 
 if __name__ == '__main__':
     try:

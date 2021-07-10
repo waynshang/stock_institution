@@ -3,6 +3,10 @@ from sqlalchemy.orm import declarative_base
 import re
 from datetime import date, datetime
 from . import stock_institutions
+from utils import getLogger
+
+DEBUG = getLogger()
+
 Base = declarative_base()
 MappingTable = {
   "Institutional Ownership": "institutional_ownership",
@@ -33,7 +37,7 @@ class StockInstitutionsLog(Base):
             institution_result = institution_results.first()
             compared_columns = list(set(institution_date.keys())-set(stock_institutions.EXCLUDE_COLUMNS))
             filter_result = list(filter(lambda i: float(vars(institution_result)[i]) != float(institution_date[i]), compared_columns))
-            print(filter_result)
+            DEBUG.info(filter_result)
             if len(filter_result) >0: 
               institution_date["updated_at"] = datetime.now()
               institution_results.update(institution_date)

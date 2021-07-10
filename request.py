@@ -1,4 +1,8 @@
 import requests
+from utils import getLogger
+
+DEBUG = getLogger()
+
 HEADER = {'user-agent': 'PostmanRuntime/7.26.10', 'Connection': 'keep-alive'}
 
 def get_nasdaq_institution_from_api(stock):
@@ -17,5 +21,5 @@ def call_api(url):
     response =requests.get(url, headers = HEADER)
     return response.json()
   except Exception as error:
-    print("{}".format(error))
+    DEBUG.error("{}".format(error))
     return None

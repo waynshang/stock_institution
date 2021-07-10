@@ -13,6 +13,6 @@ class GainLossLog():
       db.commit()
       return cursor
     except mysql.connector.Error as error:
-      print("Failed to insert into MySQL table {}".format(error))
+      DEBUG.info("Failed to insert into MySQL table {}".format(error))
       ErrorLog.insert_to_db(error, cursor, db, insert_data, file_name)
 

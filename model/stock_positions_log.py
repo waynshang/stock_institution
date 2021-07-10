@@ -2,8 +2,10 @@ from sqlalchemy import Column, Integer, String, Numeric, BigInteger, Date, DateT
 from sqlalchemy.orm import declarative_base
 import re
 from datetime import date, datetime
+from utils import getLogger
 from . import stock_positions
 
+DEBUG = getLogger()
 Base = declarative_base()
 MappingTable = {
   "Increased Positions": "increased_positions",
@@ -41,7 +43,7 @@ class StockPositionsLog(Base):
     StockPosition = stock_positions.StockPosition
 
     for d in data or []:
-      result = StockPosition.mapping_response_data_to_sql_column(d, type, result)
+      result = stock_positions.StockPosition.mapping_response_data_to_sql_column(d, type, result)
     return result
   
   def mapping_response_data_to_sql_column(data, type, result):
@@ -66,12 +68,12 @@ class StockPositionsLog(Base):
             position_result = position_results.first()
             compared_columns = list(set(position_data.keys())-set(stock_positions.EXCLUDE_COLUMNS))
             filter_result = list(filter(lambda i: float(vars(position_result)[i]) != float(position_data[i]), compared_columns))
-            print(filter_result)
+            DEBUG.info(filter_result)
             if len(filter_result) >0: 
               position_data["updated_at"] = datetime.now()
               position_results.update(position_data)
         else:
-            session.add(StockPosition(**position_data))
+            session.add(stock_positions(**position_data))
             # session.add(StockPosition(**position_data))
     return session
 
