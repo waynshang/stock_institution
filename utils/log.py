@@ -49,11 +49,13 @@ class CustomFormatter(logging.Formatter):
 #   def getLogger(self):
 #     DEBUG.info("123123")
 #     return self.__logger
-
-logger = logging.getLogger("stock")
-logger.setLevel(logging.DEBUG)
+LOGGER = logging.getLogger("stock")
+LOGGER.setLevel(logging.DEBUG)
 # create console handler with a higher log level
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
 ch.setFormatter(CustomFormatter())
-logger.addHandler(ch)
+LOGGER.addHandler(ch)
+
+def getLogger():
+  return LOGGER

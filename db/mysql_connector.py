@@ -1,6 +1,7 @@
 from db.db_connector import MysqlConnection;
 import mysql.connector
-
+from utils import getLogger
+DEBUG = getLogger()
 class MysqlConnector(MysqlConnection):  
 
   def __init__(self, database, server_name):
@@ -17,5 +18,5 @@ class MysqlConnector(MysqlConnection):
       )
       return db
     except mysql.connector.Error as error:
-      DEBUG.info(" {}".format(error))
+      DEBUG.error(" {}".format(error))
     return None

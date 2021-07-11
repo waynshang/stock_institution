@@ -11,7 +11,6 @@ DEBUG = getLogger()
 def import_data(file_name = None):
     csv_files = get_certain_format_files_from_path()
     connector = MysqlConnector('stock', 'local')
-    DEBUG.info(connector)
     db = connector.connect()
     cursor = db.cursor()
     for file_name in csv_files:

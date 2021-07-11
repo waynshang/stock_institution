@@ -1,7 +1,8 @@
 from db.mysql_connect import MysqlConnection;
 import sqlalchemy
 from sqlalchemy.exc import SQLAlchemyError
-
+from utils import getLogger
+DEBUG = getLogger()
 class SqlAlchemyConnector(MysqlConnection):
 
   def __init__(self, database, server_name):
@@ -13,5 +14,5 @@ class SqlAlchemyConnector(MysqlConnection):
       engine = sqlalchemy.create_engine(url, echo=False)
       return engine
     except SQLAlchemyError as error:
-      DEBUG.info(" {}".format(error))
+      DEBUG.error(" {}".format(error))
     return None

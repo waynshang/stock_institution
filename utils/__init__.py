@@ -2,7 +2,7 @@ from .model_util import *
 from .mmpro_util import *
 import glob
 import shutil
-from .log import logger
+from .log import *
 
 def get_certain_format_files_from_path(path = './', format='csv'):
   result = glob.glob('{}*.{}'.format(path, format))
@@ -12,8 +12,8 @@ def get_certain_format_files_from_path(path = './', format='csv'):
 def move_file(file_name, directory):
   shutil.move(file_name, directory)
 
-def getLogger():
-  return logger
+# def getLogger():
+#   return logger
 
 
 

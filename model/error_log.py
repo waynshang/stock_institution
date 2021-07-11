@@ -1,5 +1,6 @@
 import mysql.connector
-
+from utils import getLogger
+DEBUG = getLogger()
 class ErrorLog:
   @staticmethod
   def insert_to_db(error, cursor, db, data , file_name):  
@@ -8,5 +9,5 @@ class ErrorLog:
       cursor.executemany(sqlStuff, [(str(error), str(data), file_name)])
       db.commit()
     except mysql.connector.Error as error:
-      DEBUG.info("handle_error failed {}".format(error))
+      DEBUG.error("handle_error failed {}".format(error))
       # handle_error(error, cursor, db,row,file_name)
