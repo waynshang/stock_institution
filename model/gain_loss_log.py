@@ -1,8 +1,8 @@
 import mysql.connector
 import json
 from model.error_log import ErrorLog
-from utils import getLogger
-DEBUG = getLogger()
+# from utils import getLogger
+# DEBUG = getLogger()
 class GainLossLog():
 
   @staticmethod
