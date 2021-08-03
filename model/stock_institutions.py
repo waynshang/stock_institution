@@ -22,6 +22,12 @@ class StockInstitution(Base):
   # created_at = Column(DateTime)
   updated_at = Column(DateTime)
 
+  def update(self, kwargs):
+    for key, value in kwargs.items():
+        if hasattr(self, key):
+            setattr(self, key, value)
+  
+  @staticmethod
   def fetch_institution_data_from_api_response(response):
     ownershipSummaries = response["ownershipSummary"].values()
     result = {}
@@ -37,14 +43,14 @@ class StockInstitution(Base):
     return result
   
   def insert_or_update(session, institution_date, symbol):
-    session = update_table_and_insert_log(session, institution_date, symbol, StockInstitution, 
+    session, date = update_table_and_insert_log(session, institution_date, symbol, StockInstitution, 
     StockInstitutionsLog)
-    return session
+    return session, date
 
   def get_data_by_column(session, value, column):
     return session.query(StockInstitution).filter(getattr(StockInstitution, column) == value).first()
  
-
+  
   def __repr__(self):
     return "<StockInstitution(symbol='%s', institutional_ownership='%s', total_share_out_standing='%s', total_value_of_holdings='%s', date='%s')>" % (
     self.symbol, self.institutional_ownership, self.total_share_out_standing, self.total_value_of_holdings, self.date)

@@ -36,8 +36,12 @@ class StockPosition(Base):
   date = Column(Date)
   # created_at = Column(DateTime)
   updated_at = Column(DateTime)
+  def update(self, kwargs):
+    for key, value in kwargs.items():
+        if hasattr(self, key):
+            setattr(self, key, value)
 
-
+  @staticmethod
   def fetch_position_data_from_api_response(response):
     activePositions = response["activePositions"]["rows"]
     newSoldOutPositions = response["newSoldOutPositions"]["rows"]
@@ -58,9 +62,12 @@ class StockPosition(Base):
     return result
 
   def insert_or_update(session, position_data, symbol):
-    session = update_table_and_insert_log(session, position_data, symbol, StockPosition, StockPositionsLog)
-    return session
+    session, date = update_table_and_insert_log(session, position_data, symbol, StockPosition, StockPositionsLog)
+    return session, date
     
   def get_data_by_column(session, value, column):
     return session.query(StockPosition).filter(getattr(StockPosition, column) == value).first()
+
+  
+  
 

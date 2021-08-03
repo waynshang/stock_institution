@@ -23,7 +23,7 @@ def get_api_response(stock):
     return None
 
 def fetch_institution_and_position_data_from_api_response(response):
-    DEBUG.info("fetch_institution_and_position_data_from_api_response")
+    # DEBUG.info("fetch_institution_and_position_data_from_api_response")
     # {'institutional_ownership': 57.56, 'total_share_out_standing': 16688.0, 'total_value_of_holdings': 1364155.0}
     # {'increased_positions_shares': 162714490, 'decreased_positions_shares': 376214279, 
     # 'held_positions_shares': 9066444362, 'total_institutional_shares': 9605373131, 
@@ -37,21 +37,24 @@ def fetch_institution_and_position_data_from_api_response(response):
     return institution_date, position_date    
 
 def insert_or_update_db(institution_date, position_date, symbol):
-    connector = SqlAlchemyConnector('stock', 'local')
-    engine = connector.connect()
-    # create session and add objects
-    with Session(engine) as session:
-        # result = session.execute(select(StockInstitution))
-        DEBUG.info("======StockInstitution====")
-        session = StockInstitution.insert_or_update(session, institution_date, symbol)
-        DEBUG.info("======StockPosition====")
-        session = StockPosition.insert_or_update(session, position_date, symbol)
-        session.commit()
+    try:
+        connector = SqlAlchemyConnector('stock', 'local')
+        engine = connector.connect()
+        # create session and add objects
+        with Session(engine) as session:
+            # result = session.execute(select(StockInstitution))
+            session, date = StockInstitution.insert_or_update(session, institution_date, symbol)
+            DEBUG.debug("======StockInstitution insert_or_update success date: {}====".format(date))
+            session,date = StockPosition.insert_or_update(session, position_date, symbol)
+            DEBUG.debug("======StockPosition insert_or_update success date: {}====".format(date))
+            session.commit()
+    except Exception as e: 
+        DEBUG.error(e)
 
 if __name__ == '__main__':
     try:
         lt = ["AAPL", "AMZN", "AMD", "AA", "DIS", "F", "FB", "GOOG", "GS", "MSFT", "NFLX", "NVDA", "NUE","SQ", "SLB","SHOP", "TDOC", "TSLA", "TSM", "U", "UPST", "X"]
-        # lt = ["AAPL", "FB"]
+        # lt = ["AMD"]
         # lt = ["NUE"]
         for symbol in lt:
             DEBUG.info("==========symbol: {}========".format(symbol))

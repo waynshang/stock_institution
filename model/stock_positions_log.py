@@ -77,7 +77,7 @@ class StockPositionsLog(Base):
             # session.add(StockPosition(**position_data))
     return session
 
-  def prepare_and_data_from_api(session, data_from_api, old_data):
+  def insert_data_difference_to_log(session, data_from_api, old_data):
     exclude_columns = stock_positions.EXCLUDE_COLUMNS
     compared_columns = list(set(data_from_api.keys())-set(exclude_columns))
     for column in compared_columns:
