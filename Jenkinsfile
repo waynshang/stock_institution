@@ -9,9 +9,9 @@ pipeline {
           }
         }
 
-        stage('send email') {
+        stage('send telegram') {
           steps {
-            emailext(to: 'wayne18308@gmail.com', subject: 'jenkins test', body: 'this is the result', attachLog: true, from: 'wayne18308@gmail.com')
+            telegramSend(chatId: 1230975396, message: 'jenkins build')
           }
         }
 
