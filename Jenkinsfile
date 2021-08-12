@@ -20,7 +20,10 @@ pipeline {
 
     stage('print time') {
       steps {
-        timestamps()
+        timestamps() {
+          echo 'timestamp test'
+        }
+
       }
     }
 
