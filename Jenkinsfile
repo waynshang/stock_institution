@@ -6,11 +6,7 @@ pipeline {
 
   }
   stages {
-    stage('initial test') {
-      steps {
-        sh 'node --version'
-      }
-    }
+    
 
     stage('Build') {
       parallel {
@@ -28,7 +24,11 @@ pipeline {
 
       }
     }
-
+    stage('initial test') {
+      steps {
+        sh 'node --version'
+      }
+    }
     stage('print time') {
       steps {
         timestamps() {
