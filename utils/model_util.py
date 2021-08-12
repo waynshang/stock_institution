@@ -25,7 +25,7 @@ def update_table_and_insert_log(session, data_from_api, symbol, model, log_model
     #need to add to log table
     old_data = model2dict(model, data_filter_by_symbol, log_exclude_columns)
     if vars(data_filter_by_symbol)["date"] != date.today():
-      # session = log_model.insert_data_difference_to_log(session, data_from_api, old_data)
+      session = log_model.insert_data_difference_to_log(session, data_from_api, old_data)
       data_filter_by_symbol.update(data_from_api)
   else:
       session.add(model(**data_from_api))
